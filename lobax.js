@@ -77,7 +77,7 @@ function GetBestServer() {
     while( ( result == null ) && ( tried < possible ) )
     {
         possible = targets.size(); // it's possible for this to be modified elsewhere, so reset it
-        var serverEntry = targets.popEntry();
+        var serverEntry = targets.shiftEntry();
 
         if ( serverEntry.object.online )
         {

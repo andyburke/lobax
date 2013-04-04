@@ -23,6 +23,10 @@
                     case 'targets':
                         var tbody = $( '#host-table' ).find( 'tbody' );
                         $( tbody ).html( '' );
+                        message.targets = message.targets.sort( function( a, b ) {
+                            return a.id.localeCompare( b.id );
+                        });
+                        
                         for ( var i = 0; i < message.targets.length; ++i )
                         {
                             var target = message.targets[ i ];

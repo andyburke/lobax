@@ -1,7 +1,7 @@
 var http = require( 'http' );
 var async = require( 'async' );
 
-var NUM_SERVERS = 4;
+var NUM_SERVERS = 40;
 var BASE_PORT = 9000;
 
 var servers = [];
