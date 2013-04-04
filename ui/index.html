@@ -1,0 +1,92 @@
+<html>
+    <head>
+        <script src="//code.jquery.com/jquery-1.9.1.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/dustjs-linkedin/1.2.0/dust-full.min.js"></script>
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.no-icons.min.css" rel="stylesheet" />
+        <link href="//netdna.bootstrapcdn.com/font-awesome/3.0.2/css/font-awesome.css" rel="stylesheet" />
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/js/bootstrap.min.js"></script>
+
+
+        
+        <script type="text/javascript" src="/faye/client.js"></script>
+        <script type="text/javascript">
+
+            var client = new Faye.Client( '/faye', {
+                timeout: 60,
+                retry: 10
+            });
+
+            var subscription = client.subscribe( '/lobax', function( message ) {
+
+                switch( message.kind )
+                {
+                    case 'targets':
+                        var tbody = $( '#host-table' ).find( 'tbody' );
+                        $( tbody ).html( '' );
+                        for ( var i = 0; i < message.targets.length; ++i )
+                        {
+                            var target = message.targets[ i ];
+                            dust.render( 'host_table_row', target, function( error, output ) {
+                                if ( error )
+                                {
+                                    console.error( error );
+                                    return;
+                                }
+                                
+                                $( tbody ).append( output );
+                            });
+                        }
+                        break;
+                    
+                    default:
+                        break;
+                }
+            });
+
+            $( document ).ready( function() {
+                $( 'script[type="text/template"]' ).each( function( index, element ) {
+                    var template = $( element ).html();
+                    var id = element.id;
+                    
+                    dust.loadSource( dust.compile( template, id ) );
+                });
+            });
+        </script>
+    </head>
+    
+    <body>
+        <script id="host_table_row" type="text/template">
+            <tr>
+                <td>{?online}<i class="icon-ok-sign text-success"></i>{:else}<i class="icon-remove-sign text-error"></i>{/online}</td>
+                <td>{id}</td>
+                <td>{host}</td>
+                <td>{port}</td>
+                <td>{created}</td>
+                <td>{updated}</td>
+                <td>{timeout}</td>
+                <td>{priority}</td>
+                <td>{requests}</td>
+                <td>{websocketRequests}</td>
+            </tr>
+        </script>
+
+        <table id="host-table" class="table table-striped">
+            <thead>
+                <tr>
+                    <td>Status</td>
+                    <td>ID</td>
+                    <td>Host</td>
+                    <td>Port</td>
+                    <td>Created</td>
+                    <td>Updated</td>
+                    <td>Timeout</td>
+                    <td>Priority</td>
+                    <td>Requests</td>
+                    <td>Websocket Requests</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </body>
+</html>
