@@ -1,7 +1,10 @@
 var http = require( 'http' );
 var async = require( 'async' );
 
-var timeout = 33;
+var timeout = 0;
+
+var startTime = +new Date();
+var served = 0;
 
 function SendRequest() {
     var request = http.request({
@@ -15,6 +18,7 @@ function SendRequest() {
         });
         
         response.on( 'end', function() {
+            ++served;
             setTimeout( SendRequest, timeout );
         });
     });
@@ -27,4 +31,12 @@ function SendRequest() {
     request.end();
 }
 
+function ShowRate() {
+    var curTime = +new Date();
+    var rate = ( served / ( curTime - startTime ) ) * 1000;
+    console.log( Math.round( rate ) + ' / sec' );
+    setTimeout( ShowRate, 10000 );
+}
+
 SendRequest();
+ShowRate();
